@@ -20,8 +20,9 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('pfa_token');
-    if (token) {
+    const token = localStorage.getItem("pfa_token");
+    const isDemo = localStorage.getItem("pfa_demo") === "true";
+    if (token || isDemo) {
       setIsAuthenticated(true);
     }
     setLoading(false);

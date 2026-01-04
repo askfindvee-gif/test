@@ -21,6 +21,46 @@ export default function Missing() {
 
   const fetchReports = async () => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        const now = new Date();
+        setReports([
+          {
+            id: "demo-missing-1",
+            animal_type: "Dog",
+            description: "Brown indie dog missing since yesterday evening.",
+            location: "Rohini, Delhi",
+            status: "lost",
+            contact: "demo.contact@example.com",
+            reported_by: "Resident",
+            created_at: new Date(now.getTime() - 1000 * 60 * 60 * 20).toISOString(),
+            updated_at: new Date(now.getTime() - 1000 * 60 * 60 * 20).toISOString(),
+          },
+          {
+            id: "demo-missing-2",
+            animal_type: "Cat",
+            description: "White cat found near park; looking for owner.",
+            location: "Saket, Delhi",
+            status: "found",
+            contact: "demo.finder@example.com",
+            reported_by: "Volunteer",
+            created_at: new Date(now.getTime() - 1000 * 60 * 60 * 44).toISOString(),
+            updated_at: new Date(now.getTime() - 1000 * 60 * 60 * 12).toISOString(),
+          },
+          {
+            id: "demo-missing-3",
+            animal_type: "Dog",
+            description: "Reunited with family after verification.",
+            location: "Mayur Vihar, Delhi",
+            status: "reunited",
+            contact: "demo.owner@example.com",
+            reported_by: "Team",
+            created_at: new Date(now.getTime() - 1000 * 60 * 60 * 80).toISOString(),
+            updated_at: new Date(now.getTime() - 1000 * 60 * 60 * 60).toISOString(),
+          },
+        ]);
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/missing`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -35,6 +75,16 @@ export default function Missing() {
 
   const updateStatus = async (id, status) => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        setReports((prev) =>
+          prev.map((r) =>
+            r.id === id ? { ...r, status, updated_at: new Date().toISOString() } : r,
+          ),
+        );
+        toast.success("Status updated");
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       await axios.put(`${API}/missing/${id}?status=${status}`, {}, {
         headers: { Authorization: `Bearer ${token}` }

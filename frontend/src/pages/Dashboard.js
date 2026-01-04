@@ -24,6 +24,19 @@ export default function Dashboard() {
 
   const fetchStats = async () => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        setStats({
+          impact_score: 128,
+          days_active: 42,
+          total_incidents: 18,
+          total_activities: 64,
+          total_missing: 7,
+          total_sos: 3,
+          pending_volunteers: 5,
+        });
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/dashboard/stats`, {
         headers: { Authorization: `Bearer ${token}` }

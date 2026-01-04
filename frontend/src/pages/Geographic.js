@@ -34,6 +34,91 @@ export default function Geographic() {
 
   const fetchGeographic = async () => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        setGeoData({
+          locations: [
+            {
+              state: "Delhi",
+              district: "North Delhi",
+              city: "Rohini",
+              latitude: 28.7495,
+              longitude: 77.0736,
+              incident_count: 42,
+              severity: "high",
+              status: "Monitor",
+            },
+            {
+              state: "Delhi",
+              district: "South Delhi",
+              city: "Saket",
+              latitude: 28.5245,
+              longitude: 77.2072,
+              incident_count: 28,
+              severity: "medium",
+              status: "Stable",
+            },
+            {
+              state: "Delhi",
+              district: "East Delhi",
+              city: "Mayur Vihar",
+              latitude: 28.6082,
+              longitude: 77.2986,
+              incident_count: 15,
+              severity: "low",
+              status: "Safe",
+            },
+          ],
+          stats: {
+            high_feeding_zones: 85,
+            recurring_cruelty_areas: 24,
+            repeated_complaints: 142,
+            intervention_regions: 7,
+          },
+        });
+        setClusters({
+          clusters: { urban: 324, semi_urban: 189, rural: 92 },
+          districts: [
+            { district: "South", count: 245 },
+            { district: "East", count: 312 },
+            { district: "West", count: 198 },
+            { district: "North", count: 276 },
+            { district: "Ctrl", count: 156 },
+            { district: "Rur", count: 89 },
+          ],
+        });
+        setPatterns([
+          {
+            id: "1",
+            pattern_name: "Post-festival displacement surge",
+            description: "Confidence Level: 92% - Expected Duration: 48h",
+            type: "detected",
+            severity: "warning",
+          },
+          {
+            id: "2",
+            pattern_name: "Construction Site Recurring Incidents",
+            description: "Sector 4, Rohini - 5 Cases / 24h",
+            type: "new_cluster",
+            severity: "critical",
+          },
+          {
+            id: "3",
+            pattern_name: "Positive Impact: Feeding Drives",
+            description: "South District - Conflict reduced by 46%",
+            type: "correlation",
+            severity: "positive",
+          },
+          {
+            id: "4",
+            pattern_name: "Community Awareness Uptick",
+            description: "Higher reporting + lower conflict in monitored zones",
+            type: "info",
+            severity: "info",
+          },
+        ]);
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       const headers = { Authorization: `Bearer ${token}` };
 

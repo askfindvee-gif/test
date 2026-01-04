@@ -7,116 +7,155 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 export default function Login({ setIsAuthenticated }) {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const adminLogin = async ({ email, password }) => {
     setLoading(true);
 
     try {
       const response = await axios.post(`${API}/auth/login`, {
         email,
-        password
+        password,
       });
 
-      localStorage.setItem('pfa_token', response.data.token);
-      localStorage.setItem('pfa_user', JSON.stringify(response.data.user));
+      // Real admin login (not demo)
+      localStorage.removeItem("pfa_demo");
+      localStorage.setItem("pfa_token", response.data.token);
+      localStorage.setItem("pfa_user", JSON.stringify(response.data.user));
       setIsAuthenticated(true);
       toast.success("Login successful!");
+      return true;
     } catch (error) {
       toast.error(error.response?.data?.detail || "Login failed");
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-lg">
-        {/* Paw Icon */}
-        <div className="mb-16 flex justify-start">
-          <div className="border border-white/20 px-8 py-3">
-            <svg 
-              width="40" 
-              height="40" 
-              viewBox="0 0 24 24" 
-              fill="white"
-              className="opacity-90"
-            >
-              <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4-3c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM5.5 16c-.83 0-1.5.67-1.5 1.5S4.67 19 5.5 19 7 18.33 7 17.5 6.33 16 5.5 16zm13 0c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/>
-            </svg>
-          </div>
-        </div>
+  const handleProceed = async (e) => {
+    e.preventDefault();
+    await adminLogin({ email: username, password });
+  };
 
+  const handleDemoMode = async () => {
+    // Must bypass all validation and grant full portal access.
+    localStorage.setItem("pfa_demo", "true");
+    setIsAuthenticated(true);
+
+    // Provide a demo identity so the portal has a user context.
+    localStorage.setItem("pfa_token", "demo");
+    localStorage.setItem(
+      "pfa_user",
+      JSON.stringify({
+        id: "demo",
+        email: "demo@pfa.org",
+        name: "Demo Admin",
+        role: "admin",
+      }),
+    );
+
+    // Optional: attempt a real login in the background for live data,
+    // but DO NOT clear demo mode or block access if it fails.
+    try {
+      const response = await axios.post(`${API}/auth/login`, {
+        email: "admin@pfa.org",
+        password: "admin123",
+      });
+      localStorage.setItem("pfa_token", response.data.token);
+      localStorage.setItem("pfa_user", JSON.stringify(response.data.user));
+    } catch {
+      // ignore
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-black via-[#0b0b0c] to-black flex items-center justify-center px-6 py-10">
+      <div className="w-full max-w-xl">
         {/* Heading */}
-        <div className="mb-20">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-3" style={{ letterSpacing: '0.02em' }}>
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-2" style={{ letterSpacing: "0.02em" }}>
             People For
           </h1>
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-500 mb-6" style={{ letterSpacing: '0.02em' }}>
+          <h1 className="text-5xl md:text-6xl font-bold text-slate-500 mb-5" style={{ letterSpacing: "0.02em" }}>
             Animals
           </h1>
-          <p className="text-base text-white mb-3" style={{ letterSpacing: '0.01em' }}>
+          <p className="text-base text-white/90 mb-3" style={{ letterSpacing: "0.01em" }}>
             where empathy meets action.
           </p>
-          <p className="text-[11px] text-gray-600 uppercase" style={{ letterSpacing: '0.25em' }}>
+          <p className="text-[11px] text-slate-600 uppercase" style={{ letterSpacing: "0.25em" }}>
             A collective for the conscious citizen.
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleLogin} className="space-y-8">
-          <div>
-            <label className="text-[10px] text-gray-600 uppercase tracking-[0.2em] block mb-3">
-              Mobile Number
+        <form onSubmit={handleProceed} className="space-y-7">
+          <div className="text-left">
+            <label className="text-[10px] text-slate-600 uppercase tracking-[0.2em] block mb-3">
+              Username
             </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-transparent border-b border-white/10 text-white text-lg py-3 focus:outline-none focus:border-white/30 transition-colors placeholder:text-gray-700"
-              placeholder="admin@pfa.org"
-              required
-              data-testid="login-email-input"
-            />
+            <div className="h-14 border border-white/12 bg-white/[0.02] px-6 flex items-center">
+              <input
+                type="text"
+                autoComplete="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full bg-transparent text-white/90 text-xl focus:outline-none placeholder:text-slate-700"
+                placeholder="admin@pfa.org"
+                required
+                data-testid="login-username-input"
+                aria-label="Username"
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="text-[10px] text-gray-600 uppercase tracking-[0.2em] block mb-3">
+          <div className="text-left">
+            <label className="text-[10px] text-slate-600 uppercase tracking-[0.2em] block mb-3">
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-transparent border-b border-white/10 text-white text-lg py-3 focus:outline-none focus:border-white/30 transition-colors placeholder:text-gray-700"
-              placeholder="Enter password"
-              required
-              data-testid="login-password-input"
-            />
+            <div className="h-14 border border-white/12 bg-white/[0.02] px-6 flex items-center">
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-transparent text-white/90 text-xl focus:outline-none placeholder:text-slate-700"
+                placeholder="Enter password"
+                required
+                data-testid="login-password-input"
+                aria-label="Password"
+              />
+            </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white hover:bg-gray-100 text-black font-semibold text-sm uppercase tracking-[0.15em] py-4 transition-colors duration-200 flex items-center justify-center gap-3 mt-12"
+            className="w-full h-14 bg-white/60 hover:bg-white/70 disabled:opacity-60 disabled:hover:bg-white/60 text-black font-semibold text-sm uppercase tracking-[0.18em] transition-colors duration-200 flex items-center justify-center gap-3 mt-8"
             data-testid="login-submit-button"
           >
             <span>{loading ? "Processing..." : "Proceed"}</span>
             <ArrowRight className="w-5 h-5" />
           </button>
+
+          <button
+            type="button"
+            onClick={handleDemoMode}
+            disabled={loading}
+            className="w-full h-14 border border-white/12 bg-white/[0.03] hover:bg-white/[0.06] disabled:opacity-60 text-white font-semibold text-sm uppercase tracking-[0.18em] transition-colors duration-200 flex items-center justify-center gap-3"
+            data-testid="login-demo-button"
+          >
+            <span>Continue in Demo Mode</span>
+            <ArrowRight className="w-5 h-5" />
+          </button>
         </form>
 
         {/* Footer */}
-        <div className="mt-12 text-center">
-          <p className="text-[10px] text-gray-700 uppercase tracking-[0.2em]">
-            Secure Access · Privacy Ensured
-          </p>
-          <p className="text-xs text-gray-600 mt-4">
-            Default: admin@pfa.org / admin123
-          </p>
+        <div className="mt-10 flex items-center justify-center gap-10 text-[10px] text-slate-700 uppercase tracking-[0.2em]">
+          <span>Secure Access</span>
+          <span>Privacy Ensured</span>
         </div>
       </div>
     </div>

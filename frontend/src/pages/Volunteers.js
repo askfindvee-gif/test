@@ -21,6 +21,40 @@ export default function Volunteers() {
 
   const fetchVolunteers = async () => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        const now = new Date();
+        setVolunteers([
+          {
+            id: "demo-vol-1",
+            name: "Rajesh Kumar",
+            email: "rajesh.kumar@example.com",
+            phone: "+91 98765 43210",
+            location: "South Delhi",
+            status: "pending",
+            joined_at: new Date(now.getTime() - 1000 * 60 * 60 * 36).toISOString(),
+          },
+          {
+            id: "demo-vol-2",
+            name: "Asha Singh",
+            email: "asha.singh@example.com",
+            phone: "+91 91234 56789",
+            location: "Rohini, Delhi",
+            status: "approved",
+            joined_at: new Date(now.getTime() - 1000 * 60 * 60 * 96).toISOString(),
+          },
+          {
+            id: "demo-vol-3",
+            name: "Imran Khan",
+            email: "imran.khan@example.com",
+            phone: "+91 99887 77665",
+            location: "Mayur Vihar, Delhi",
+            status: "rejected",
+            joined_at: new Date(now.getTime() - 1000 * 60 * 60 * 140).toISOString(),
+          },
+        ]);
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/volunteers`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -35,6 +69,14 @@ export default function Volunteers() {
 
   const updateStatus = async (id, status) => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        setVolunteers((prev) =>
+          prev.map((v) => (v.id === id ? { ...v, status } : v)),
+        );
+        toast.success(`Volunteer ${status}`);
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       await axios.put(`${API}/volunteers/${id}`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -48,6 +90,12 @@ export default function Volunteers() {
 
   const deleteVolunteer = async (id) => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        setVolunteers((prev) => prev.filter((v) => v.id !== id));
+        toast.success("Volunteer removed");
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       await axios.delete(`${API}/volunteers/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
