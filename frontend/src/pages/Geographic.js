@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { ArrowLeft, MapPin, AlertCircle, Activity, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -11,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { states, getDistricts } from "@/data/statesDistricts";
 
-import { API_BASE } from "@/lib/api";
+import { apiGet } from "@/lib/api";
 
 export default function Geographic() {
   const navigate = useNavigate();
@@ -37,9 +36,9 @@ export default function Geographic() {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [geoRes, clusterRes, patternRes] = await Promise.all([
-        axios.get(`${API_BASE}/analytics/geographic`, { headers }),
-        axios.get(`${API_BASE}/analytics/clusters`, { headers }),
-        axios.get(`${API_BASE}/analytics/patterns`, { headers })
+        apiGet(`/analytics/geographic`, { headers }),
+        apiGet(`/analytics/clusters`, { headers }),
+        apiGet(`/analytics/patterns`, { headers })
       ]);
 
       setGeoData(geoRes.data);

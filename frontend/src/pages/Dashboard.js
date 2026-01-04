@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Bell, LayoutDashboard, Siren, Activity, MessageCircle, User, ShieldAlert, Utensils, Search, TrendingUp, Map } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { toast } from "sonner";
 import ThemeToggle from "@/components/ThemeToggle";
 
-import { API_BASE } from "@/lib/api";
+import { apiGet } from "@/lib/api";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -24,7 +23,7 @@ export default function Dashboard() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('pfa_token');
-      const response = await axios.get(`${API_BASE}/dashboard/stats`, {
+      const response = await apiGet(`/dashboard/stats`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStats(response.data);

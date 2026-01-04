@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { ArrowLeft, ShieldAlert } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
@@ -7,7 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import { API_BASE } from "@/lib/api";
+import { apiGet, apiPut } from "@/lib/api";
 
 export default function SOS() {
   const navigate = useNavigate();
@@ -21,7 +20,7 @@ export default function SOS() {
   const fetchAlerts = async () => {
     try {
       const token = localStorage.getItem('pfa_token');
-      const response = await axios.get(`${API_BASE}/sos`, {
+      const response = await apiGet(`/sos`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAlerts(response.data);
@@ -35,7 +34,7 @@ export default function SOS() {
   const resolveAlert = async (id) => {
     try {
       const token = localStorage.getItem('pfa_token');
-      await axios.put(`${API_BASE}/sos/${id}`, {}, {
+      await apiPut(`/sos/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Alert resolved");

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { ArrowLeft, Users, UserCheck, UserX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
@@ -7,7 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import { API_BASE } from "@/lib/api";
+import { apiDelete, apiGet, apiPut } from "@/lib/api";
 
 export default function Volunteers() {
   const navigate = useNavigate();
@@ -21,7 +20,7 @@ export default function Volunteers() {
   const fetchVolunteers = async () => {
     try {
       const token = localStorage.getItem('pfa_token');
-      const response = await axios.get(`${API_BASE}/volunteers`, {
+      const response = await apiGet(`/volunteers`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setVolunteers(response.data);
@@ -35,7 +34,7 @@ export default function Volunteers() {
   const updateStatus = async (id, status) => {
     try {
       const token = localStorage.getItem('pfa_token');
-      await axios.put(`${API_BASE}/volunteers/${id}`, { status }, {
+      await apiPut(`/volunteers/${id}`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success(`Volunteer ${status}`);
@@ -48,7 +47,7 @@ export default function Volunteers() {
   const deleteVolunteer = async (id) => {
     try {
       const token = localStorage.getItem('pfa_token');
-      await axios.delete(`${API_BASE}/volunteers/${id}`, {
+      await apiDelete(`/volunteers/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Volunteer removed");
