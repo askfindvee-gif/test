@@ -35,21 +35,6 @@ export default function Login({ setIsAuthenticated }) {
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-lg">
-        {/* Paw Icon */}
-        <div className="mb-16 flex justify-start">
-          <div className="border border-white/20 px-8 py-3">
-            <svg 
-              width="40" 
-              height="40" 
-              viewBox="0 0 24 24" 
-              fill="white"
-              className="opacity-90"
-            >
-              <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4-3c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM5.5 16c-.83 0-1.5.67-1.5 1.5S4.67 19 5.5 19 7 18.33 7 17.5 6.33 16 5.5 16zm13 0c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/>
-            </svg>
-          </div>
-        </div>
-
         {/* Heading */}
         <div className="mb-20">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-3" style={{ letterSpacing: '0.02em' }}>
