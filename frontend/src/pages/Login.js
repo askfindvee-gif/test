@@ -11,7 +11,7 @@ export default function Login({ setIsAuthenticated }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const doLogin = async ({ email, password }) => {
+  const adminLogin = async ({ email, password }) => {
     setLoading(true);
 
     try {
@@ -20,6 +20,7 @@ export default function Login({ setIsAuthenticated }) {
         password,
       });
 
+      // Real admin login (not demo)
       localStorage.removeItem("pfa_demo");
       localStorage.setItem("pfa_token", response.data.token);
       localStorage.setItem("pfa_user", JSON.stringify(response.data.user));
@@ -36,7 +37,7 @@ export default function Login({ setIsAuthenticated }) {
 
   const handleProceed = async (e) => {
     e.preventDefault();
-    await doLogin({ email: username, password });
+    await adminLogin({ email: username, password });
   };
 
   const handleDemoMode = async () => {
@@ -44,45 +45,35 @@ export default function Login({ setIsAuthenticated }) {
     localStorage.setItem("pfa_demo", "true");
     setIsAuthenticated(true);
 
-    // Try to get a real token in the background (best UX for live data),
-    // but still allow access even if this fails.
-    const ok = await doLogin({ email: "admin@pfa.org", password: "admin123" });
-    if (!ok) {
-      localStorage.setItem("pfa_token", "demo");
-      localStorage.setItem(
-        "pfa_user",
-        JSON.stringify({
-          id: "demo",
-          email: "demo@pfa.org",
-          name: "Demo Admin",
-          role: "admin",
-        }),
-      );
+    // Provide a demo identity so the portal has a user context.
+    localStorage.setItem("pfa_token", "demo");
+    localStorage.setItem(
+      "pfa_user",
+      JSON.stringify({
+        id: "demo",
+        email: "demo@pfa.org",
+        name: "Demo Admin",
+        role: "admin",
+      }),
+    );
+
+    // Optional: attempt a real login in the background for live data,
+    // but DO NOT clear demo mode or block access if it fails.
+    try {
+      const response = await axios.post(`${API}/auth/login`, {
+        email: "admin@pfa.org",
+        password: "admin123",
+      });
+      localStorage.setItem("pfa_token", response.data.token);
+      localStorage.setItem("pfa_user", JSON.stringify(response.data.user));
+    } catch {
+      // ignore
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-[#0b0b0c] to-black flex items-center justify-center px-6 py-10">
       <div className="w-full max-w-xl">
-        {/* Icon */}
-        <div className="mb-12 flex justify-center">
-          <div className="h-20 w-20 border border-white/15 bg-white/[0.02] flex items-center justify-center">
-            <svg
-              width="44"
-              height="44"
-              viewBox="0 0 24 24"
-              fill="none"
-              className="opacity-95"
-              aria-hidden="true"
-            >
-              <path
-                d="M12 11.2c-1.35 0-2.45 1.1-2.45 2.45S10.65 16.1 12 16.1s2.45-1.1 2.45-2.45S13.35 11.2 12 11.2Zm-4.95-3.8c-1.25 0-2.25 1-2.25 2.25s1 2.25 2.25 2.25S9.3 11.9 9.3 10.65 8.3 7.4 7.05 7.4Zm9.9 0c-1.25 0-2.25 1-2.25 2.25s1 2.25 2.25 2.25 2.25-1 2.25-2.25S18.2 7.4 16.95 7.4ZM6.15 16.95c-.95 0-1.7.75-1.7 1.7s.75 1.7 1.7 1.7 1.7-.75 1.7-1.7-.75-1.7-1.7-1.7Zm11.7 0c-.95 0-1.7.75-1.7 1.7s.75 1.7 1.7 1.7 1.7-.75 1.7-1.7-.75-1.7-1.7-1.7Z"
-                fill="white"
-              />
-            </svg>
-          </div>
-        </div>
-
         {/* Heading */}
         <div className="mb-12 text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-2" style={{ letterSpacing: "0.02em" }}>
@@ -105,24 +96,18 @@ export default function Login({ setIsAuthenticated }) {
             <label className="text-[10px] text-slate-600 uppercase tracking-[0.2em] block mb-3">
               Username
             </label>
-
-            <div className="flex gap-4">
-              <div className="w-[84px] h-14 border border-white/12 bg-white/[0.02] flex items-center justify-center text-white/90 text-base">
-                @
-              </div>
-              <div className="flex-1 h-14 border border-white/12 bg-white/[0.02] px-6 flex items-center">
-                <input
-                  type="text"
-                  autoComplete="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full bg-transparent text-white/90 text-xl focus:outline-none placeholder:text-slate-700"
-                  placeholder="admin@pfa.org"
-                  required
-                  data-testid="login-username-input"
-                  aria-label="Username"
-                />
-              </div>
+            <div className="h-14 border border-white/12 bg-white/[0.02] px-6 flex items-center">
+              <input
+                type="text"
+                autoComplete="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full bg-transparent text-white/90 text-xl focus:outline-none placeholder:text-slate-700"
+                placeholder="admin@pfa.org"
+                required
+                data-testid="login-username-input"
+                aria-label="Username"
+              />
             </div>
           </div>
 
@@ -130,24 +115,18 @@ export default function Login({ setIsAuthenticated }) {
             <label className="text-[10px] text-slate-600 uppercase tracking-[0.2em] block mb-3">
               Password
             </label>
-
-            <div className="flex gap-4">
-              <div className="w-[84px] h-14 border border-white/12 bg-white/[0.02] flex items-center justify-center text-white/70 text-base">
-                •••
-              </div>
-              <div className="flex-1 h-14 border border-white/12 bg-white/[0.02] px-6 flex items-center">
-                <input
-                  type="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-transparent text-white/90 text-xl focus:outline-none placeholder:text-slate-700"
-                  placeholder="Enter password"
-                  required
-                  data-testid="login-password-input"
-                  aria-label="Password"
-                />
-              </div>
+            <div className="h-14 border border-white/12 bg-white/[0.02] px-6 flex items-center">
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-transparent text-white/90 text-xl focus:outline-none placeholder:text-slate-700"
+                placeholder="Enter password"
+                required
+                data-testid="login-password-input"
+                aria-label="Password"
+              />
             </div>
           </div>
 
