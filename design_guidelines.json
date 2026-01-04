@@ -1,0 +1,93 @@
+{
+  "typography": {
+    "font_family": {
+      "heading": "Michroma, sans-serif",
+      "body": "Exo 2, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "styles": {
+      "h1": "font-heading text-3xl md:text-4xl uppercase tracking-wider text-white",
+      "h2": "font-heading text-xl md:text-2xl uppercase tracking-wide text-white",
+      "subtitle": "font-body text-sm md:text-base text-gray-400 uppercase tracking-widest",
+      "body": "font-body text-base text-gray-300",
+      "label": "font-body text-xs font-bold uppercase tracking-wider text-gray-500"
+    },
+    "imports": [
+      "https://fonts.googleapis.com/css2?family=Michroma&family=Exo+2:wght@300;400;500;600;700&display=swap"
+    ]
+  },
+  "colors": {
+    "background": {
+      "default": "#000000",
+      "card": "#111111",
+      "card_hover": "#1A1A1A"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#9CA3AF",
+      "muted": "#4B5563"
+    },
+    "status": {
+      "active": "#22C55E",
+      "inactive": "#6B7280",
+      "alert": "#EF4444"
+    },
+    "actions": {
+      "orange": "#F97316",
+      "green": "#22C55E",
+      "yellow": "#EAB308",
+      "blue": "#3B82F6",
+      "red": "#DC2626"
+    }
+  },
+  "layout": {
+    "grid": {
+      "mobile": "grid-cols-2 gap-4",
+      "desktop": "grid-cols-4 gap-6"
+    },
+    "spacing": {
+      "container": "p-6 md:p-8 max-w-md mx-auto md:max-w-4xl",
+      "section": "space-y-6"
+    }
+  },
+  "components": {
+    "cards": {
+      "stat_card": "rounded-2xl p-4 flex flex-col justify-between h-32",
+      "action_card": "group relative overflow-hidden rounded-3xl bg-[#111111] border border-white/10 p-5 hover:border-white/20 transition-all duration-300 active:scale-95",
+      "sos_card": "col-span-2 bg-red-600 hover:bg-red-700 text-white rounded-3xl p-5 flex items-center justify-between transition-all active:scale-95"
+    },
+    "navigation": {
+      "bottom_bar": "fixed bottom-0 left-0 right-0 bg-[#0A0A0A]/90 backdrop-blur-xl border-t border-white/10 h-20 flex items-center justify-around px-6 z-50"
+    },
+    "icons": {
+      "style": "p-3 rounded-full mb-3 w-fit",
+      "size": "w-6 h-6"
+    }
+  },
+  "assets": {
+    "images": {
+      "user_avatar": "https://images.pexels.com/photos/5301744/pexels-photo-5301744.jpeg"
+    },
+    "icons_mapping": {
+      "report_incident": "Siren",
+      "log_activity": "Utensils",
+      "report_missing": "Search",
+      "connect": "MessageCircle",
+      "emergency_sos": "ShieldAlert",
+      "home": "LayoutDashboard",
+      "activity": "Activity",
+      "profile": "User"
+    }
+  },
+  "universal_guidelines": [
+    "Use 'Michroma' for all main headings to match the 'Eurostile Extended' look.",
+    "Background must be pure black (#000000).",
+    "Action cards must use the specific color coding (Orange, Green, Yellow, Blue, Red).",
+    "The 'Emergency SOS' card must span full width (col-span-2).",
+    "Status indicator 'SYSTEM ACTIVE' must be a glowing green dot.",
+    "Use 'Exo 2' for body text to maintain the tech/civic feel.",
+    "Bottom navigation is mandatory.",
+    "Do not use gradients for backgrounds, stick to solid dark colors with subtle borders."
+  ],
+  "instructions_to_main_agent": "1. Install fonts via Google Fonts import in index.css. 2. Create the 'Dashboard' page as the main entry point. 3. Implement the grid layout exactly as described: 2 columns for action cards, full width for SOS. 4. Use Lucide-React icons inside colored circular backgrounds within the cards. 5. Ensure the 'Impact Score' card is White with Black text, and 'Days Active' is Dark with White text."
+}
