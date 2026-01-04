@@ -7,7 +7,8 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 export default function Login({ setIsAuthenticated }) {
-  const [mobileNumber, setMobileNumber] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const doLogin = async ({ email, password }) => {
@@ -19,12 +20,15 @@ export default function Login({ setIsAuthenticated }) {
         password,
       });
 
+      localStorage.removeItem("pfa_demo");
       localStorage.setItem("pfa_token", response.data.token);
       localStorage.setItem("pfa_user", JSON.stringify(response.data.user));
       setIsAuthenticated(true);
       toast.success("Login successful!");
+      return true;
     } catch (error) {
       toast.error(error.response?.data?.detail || "Login failed");
+      return false;
     } finally {
       setLoading(false);
     }
@@ -32,19 +36,29 @@ export default function Login({ setIsAuthenticated }) {
 
   const handleProceed = async (e) => {
     e.preventDefault();
-
-    // UI matches the provided screenshot (mobile-first).
-    // Backend currently authenticates with email/password, so we use demo credentials here.
-    if (!mobileNumber.trim()) {
-      toast.error("Please enter your mobile number.");
-      return;
-    }
-
-    await doLogin({ email: "admin@pfa.org", password: "admin123" });
+    await doLogin({ email: username, password });
   };
 
   const handleDemoMode = async () => {
-    await doLogin({ email: "admin@pfa.org", password: "admin123" });
+    // Must bypass all validation and grant full portal access.
+    localStorage.setItem("pfa_demo", "true");
+    setIsAuthenticated(true);
+
+    // Try to get a real token in the background (best UX for live data),
+    // but still allow access even if this fails.
+    const ok = await doLogin({ email: "admin@pfa.org", password: "admin123" });
+    if (!ok) {
+      localStorage.setItem("pfa_token", "demo");
+      localStorage.setItem(
+        "pfa_user",
+        JSON.stringify({
+          id: "demo",
+          email: "demo@pfa.org",
+          name: "Demo Admin",
+          role: "admin",
+        }),
+      );
+    }
   };
 
   return (
@@ -89,28 +103,49 @@ export default function Login({ setIsAuthenticated }) {
         <form onSubmit={handleProceed} className="space-y-7">
           <div className="text-left">
             <label className="text-[10px] text-slate-600 uppercase tracking-[0.2em] block mb-3">
-              Mobile Number
+              Username
             </label>
 
             <div className="flex gap-4">
               <div className="w-[84px] h-14 border border-white/12 bg-white/[0.02] flex items-center justify-center text-white/90 text-base">
-                +91
+                @
               </div>
               <div className="flex-1 h-14 border border-white/12 bg-white/[0.02] px-6 flex items-center">
                 <input
-                  type="tel"
-                  inputMode="numeric"
-                  value={mobileNumber}
-                  onChange={(e) =>
-                    setMobileNumber(
-                      e.target.value.replace(/[^\d]/g, "").slice(0, 10),
-                    )
-                  }
-                  className="w-full bg-transparent text-white/90 text-2xl tracking-[0.25em] focus:outline-none placeholder:text-slate-700"
-                  placeholder="0000000000"
+                  type="text"
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full bg-transparent text-white/90 text-xl focus:outline-none placeholder:text-slate-700"
+                  placeholder="admin@pfa.org"
                   required
-                  data-testid="login-mobile-input"
-                  aria-label="Mobile number"
+                  data-testid="login-username-input"
+                  aria-label="Username"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="text-left">
+            <label className="text-[10px] text-slate-600 uppercase tracking-[0.2em] block mb-3">
+              Password
+            </label>
+
+            <div className="flex gap-4">
+              <div className="w-[84px] h-14 border border-white/12 bg-white/[0.02] flex items-center justify-center text-white/70 text-base">
+                •••
+              </div>
+              <div className="flex-1 h-14 border border-white/12 bg-white/[0.02] px-6 flex items-center">
+                <input
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-transparent text-white/90 text-xl focus:outline-none placeholder:text-slate-700"
+                  placeholder="Enter password"
+                  required
+                  data-testid="login-password-input"
+                  aria-label="Password"
                 />
               </div>
             </div>

@@ -46,6 +46,7 @@ export default function Profile() {
   const handleLogout = () => {
     localStorage.removeItem('pfa_token');
     localStorage.removeItem('pfa_user');
+    localStorage.removeItem('pfa_demo');
     toast.success("Logged out successfully");
     window.location.href = '/login';
   };
