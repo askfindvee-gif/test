@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { ArrowLeft, TrendingUp, AlertTriangle, Activity, Check, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -9,8 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { states, getDistricts } from "@/data/statesDistricts";
 import ThemeToggle from "@/components/ThemeToggle";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { apiGet } from "@/lib/api";
 
 export default function Intelligence() {
   const navigate = useNavigate();
@@ -56,9 +54,9 @@ export default function Intelligence() {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [insightsRes, patternsRes, trendsRes] = await Promise.all([
-        axios.get(`${API}/analytics/insights`, { headers }),
-        axios.get(`${API}/analytics/patterns`, { headers }),
-        axios.get(`${API}/analytics/trends`, { headers })
+        apiGet(`/analytics/insights`, { headers }),
+        apiGet(`/analytics/patterns`, { headers }),
+        apiGet(`/analytics/trends`, { headers })
       ]);
 
       setAllInsights(insightsRes.data);

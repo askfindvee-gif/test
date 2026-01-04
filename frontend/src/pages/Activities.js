@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { ArrowLeft, Activity, Calendar, MapPin, Utensils, Heart, ShieldAlert, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
@@ -8,8 +7,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { states, getDistricts } from "@/data/statesDistricts";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { apiGet } from "@/lib/api";
 
 export default function Activities() {
   const navigate = useNavigate();
@@ -53,7 +51,7 @@ export default function Activities() {
   const fetchActivities = async () => {
     try {
       const token = localStorage.getItem('pfa_token');
-      const response = await axios.get(`${API}/activities`, {
+      const response = await apiGet(`/activities`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setActivities(response.data);

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { ArrowLeft, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
@@ -7,8 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { apiGet, apiPut } from "@/lib/api";
 
 export default function Incidents() {
   const navigate = useNavigate();
@@ -22,7 +20,7 @@ export default function Incidents() {
   const fetchIncidents = async () => {
     try {
       const token = localStorage.getItem('pfa_token');
-      const response = await axios.get(`${API}/incidents`, {
+      const response = await apiGet(`/incidents`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIncidents(response.data);
@@ -36,7 +34,7 @@ export default function Incidents() {
   const updateStatus = async (id, status) => {
     try {
       const token = localStorage.getItem('pfa_token');
-      await axios.put(`${API}/incidents/${id}?status=${status}`, {}, {
+      await apiPut(`/incidents/${id}?status=${status}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Status updated");

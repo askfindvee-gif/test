@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { ArrowLeft, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
@@ -7,8 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { apiGet, apiPut } from "@/lib/api";
 
 export default function Missing() {
   const navigate = useNavigate();
@@ -22,7 +20,7 @@ export default function Missing() {
   const fetchReports = async () => {
     try {
       const token = localStorage.getItem('pfa_token');
-      const response = await axios.get(`${API}/missing`, {
+      const response = await apiGet(`/missing`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setReports(response.data);
@@ -36,7 +34,7 @@ export default function Missing() {
   const updateStatus = async (id, status) => {
     try {
       const token = localStorage.getItem('pfa_token');
-      await axios.put(`${API}/missing/${id}?status=${status}`, {}, {
+      await apiPut(`/missing/${id}?status=${status}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Status updated");
