@@ -10,6 +10,16 @@ export default function Login({ setIsAuthenticated }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const signInDemo = (reason) => {
+    localStorage.setItem("pfa_token", "demo-token");
+    localStorage.setItem(
+      "pfa_user",
+      JSON.stringify({ email: "admin@pfa.org", name: "Admin", role: "admin" }),
+    );
+    setIsAuthenticated(true);
+    toast.warning(reason);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -25,20 +35,16 @@ export default function Login({ setIsAuthenticated }) {
       setIsAuthenticated(true);
       toast.success("Login successful!");
     } catch (error) {
-      // If backend isn't configured/reachable (common on static deployments),
-      // allow demo login so the UI can be accessed.
+      // At-any-cost fallback: if the backend can't log you in, still allow
+      // the default credentials to enter the UI so you can navigate past login.
       const isDefaultCreds = email === "admin@pfa.org" && password === "admin123";
-      const isNetworkOrNotFound =
-        !error?.response || error?.code === "ERR_NETWORK" || error?.response?.status === 404;
 
-      if (isDefaultCreds && isNetworkOrNotFound) {
-        localStorage.setItem("pfa_token", "demo-token");
-        localStorage.setItem(
-          "pfa_user",
-          JSON.stringify({ email: "admin@pfa.org", name: "Admin", role: "admin" }),
+      if (isDefaultCreds) {
+        signInDemo(
+          BACKEND_URL
+            ? "Backend login failed; continuing in demo mode."
+            : "Backend not configured; continuing in demo mode.",
         );
-        setIsAuthenticated(true);
-        toast.warning(BACKEND_URL ? "Backend unreachable; signed in with demo mode." : "Backend not configured; signed in with demo mode.");
       } else {
         toast.error(error.response?.data?.detail || "Login failed");
       }
@@ -121,6 +127,15 @@ export default function Login({ setIsAuthenticated }) {
           >
             <span>{loading ? "Processing..." : "Proceed"}</span>
             <ArrowRight className="w-5 h-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => signInDemo("Continuing in demo mode.")}
+            className="w-full border border-white/20 hover:border-white/30 text-white font-semibold text-sm uppercase tracking-[0.15em] py-4 transition-colors duration-200 mt-2"
+            data-testid="login-demo-button"
+          >
+            Continue in Demo Mode
           </button>
         </form>
 
