@@ -8,8 +8,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { states, getDistricts } from "@/data/statesDistricts";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API_BASE } from "@/lib/api";
 
 export default function Activities() {
   const navigate = useNavigate();
@@ -53,7 +52,7 @@ export default function Activities() {
   const fetchActivities = async () => {
     try {
       const token = localStorage.getItem('pfa_token');
-      const response = await axios.get(`${API}/activities`, {
+      const response = await axios.get(`${API_BASE}/activities`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setActivities(response.data);

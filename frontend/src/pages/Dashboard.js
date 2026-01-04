@@ -6,8 +6,7 @@ import BottomNav from "@/components/BottomNav";
 import { toast } from "sonner";
 import ThemeToggle from "@/components/ThemeToggle";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API_BASE } from "@/lib/api";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -25,7 +24,7 @@ export default function Dashboard() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('pfa_token');
-      const response = await axios.get(`${API}/dashboard/stats`, {
+      const response = await axios.get(`${API_BASE}/dashboard/stats`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStats(response.data);

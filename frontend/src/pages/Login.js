@@ -3,8 +3,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { ArrowRight } from "lucide-react";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API_BASE, BACKEND_URL } from "@/lib/api";
 
 export default function Login({ setIsAuthenticated }) {
   const [email, setEmail] = useState("");
@@ -16,9 +15,9 @@ export default function Login({ setIsAuthenticated }) {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API}/auth/login`, {
+      const response = await axios.post(`${API_BASE}/auth/login`, {
         email,
-        password
+        password,
       });
 
       localStorage.setItem('pfa_token', response.data.token);
@@ -26,7 +25,23 @@ export default function Login({ setIsAuthenticated }) {
       setIsAuthenticated(true);
       toast.success("Login successful!");
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Login failed");
+      // If backend isn't configured/reachable (common on static deployments),
+      // allow demo login so the UI can be accessed.
+      const isDefaultCreds = email === "admin@pfa.org" && password === "admin123";
+      const isNetworkOrNotFound =
+        !error?.response || error?.code === "ERR_NETWORK" || error?.response?.status === 404;
+
+      if (isDefaultCreds && isNetworkOrNotFound) {
+        localStorage.setItem("pfa_token", "demo-token");
+        localStorage.setItem(
+          "pfa_user",
+          JSON.stringify({ email: "admin@pfa.org", name: "Admin", role: "admin" }),
+        );
+        setIsAuthenticated(true);
+        toast.warning(BACKEND_URL ? "Backend unreachable; signed in with demo mode." : "Backend not configured; signed in with demo mode.");
+      } else {
+        toast.error(error.response?.data?.detail || "Login failed");
+      }
     } finally {
       setLoading(false);
     }

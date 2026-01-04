@@ -9,8 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { states, getDistricts } from "@/data/statesDistricts";
 import ThemeToggle from "@/components/ThemeToggle";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API_BASE } from "@/lib/api";
 
 export default function Intelligence() {
   const navigate = useNavigate();
@@ -56,9 +55,9 @@ export default function Intelligence() {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [insightsRes, patternsRes, trendsRes] = await Promise.all([
-        axios.get(`${API}/analytics/insights`, { headers }),
-        axios.get(`${API}/analytics/patterns`, { headers }),
-        axios.get(`${API}/analytics/trends`, { headers })
+        axios.get(`${API_BASE}/analytics/insights`, { headers }),
+        axios.get(`${API_BASE}/analytics/patterns`, { headers }),
+        axios.get(`${API_BASE}/analytics/trends`, { headers })
       ]);
 
       setAllInsights(insightsRes.data);

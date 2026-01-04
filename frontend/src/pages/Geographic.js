@@ -11,8 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { states, getDistricts } from "@/data/statesDistricts";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API_BASE } from "@/lib/api";
 
 export default function Geographic() {
   const navigate = useNavigate();
@@ -38,9 +37,9 @@ export default function Geographic() {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [geoRes, clusterRes, patternRes] = await Promise.all([
-        axios.get(`${API}/analytics/geographic`, { headers }),
-        axios.get(`${API}/analytics/clusters`, { headers }),
-        axios.get(`${API}/analytics/patterns`, { headers })
+        axios.get(`${API_BASE}/analytics/geographic`, { headers }),
+        axios.get(`${API_BASE}/analytics/clusters`, { headers }),
+        axios.get(`${API_BASE}/analytics/patterns`, { headers })
       ]);
 
       setGeoData(geoRes.data);

@@ -7,8 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API_BASE } from "@/lib/api";
 
 export default function Incidents() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ export default function Incidents() {
   const fetchIncidents = async () => {
     try {
       const token = localStorage.getItem('pfa_token');
-      const response = await axios.get(`${API}/incidents`, {
+      const response = await axios.get(`${API_BASE}/incidents`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIncidents(response.data);
@@ -36,7 +35,7 @@ export default function Incidents() {
   const updateStatus = async (id, status) => {
     try {
       const token = localStorage.getItem('pfa_token');
-      await axios.put(`${API}/incidents/${id}?status=${status}`, {}, {
+      await axios.put(`${API_BASE}/incidents/${id}?status=${status}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Status updated");

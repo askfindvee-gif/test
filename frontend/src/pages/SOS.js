@@ -7,8 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API_BASE } from "@/lib/api";
 
 export default function SOS() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ export default function SOS() {
   const fetchAlerts = async () => {
     try {
       const token = localStorage.getItem('pfa_token');
-      const response = await axios.get(`${API}/sos`, {
+      const response = await axios.get(`${API_BASE}/sos`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAlerts(response.data);
@@ -36,7 +35,7 @@ export default function SOS() {
   const resolveAlert = async (id) => {
     try {
       const token = localStorage.getItem('pfa_token');
-      await axios.put(`${API}/sos/${id}`, {}, {
+      await axios.put(`${API_BASE}/sos/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Alert resolved");

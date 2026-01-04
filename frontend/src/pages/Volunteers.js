@@ -7,8 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API_BASE } from "@/lib/api";
 
 export default function Volunteers() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ export default function Volunteers() {
   const fetchVolunteers = async () => {
     try {
       const token = localStorage.getItem('pfa_token');
-      const response = await axios.get(`${API}/volunteers`, {
+      const response = await axios.get(`${API_BASE}/volunteers`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setVolunteers(response.data);
@@ -36,7 +35,7 @@ export default function Volunteers() {
   const updateStatus = async (id, status) => {
     try {
       const token = localStorage.getItem('pfa_token');
-      await axios.put(`${API}/volunteers/${id}`, { status }, {
+      await axios.put(`${API_BASE}/volunteers/${id}`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success(`Volunteer ${status}`);
@@ -49,7 +48,7 @@ export default function Volunteers() {
   const deleteVolunteer = async (id) => {
     try {
       const token = localStorage.getItem('pfa_token');
-      await axios.delete(`${API}/volunteers/${id}`, {
+      await axios.delete(`${API_BASE}/volunteers/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Volunteer removed");
