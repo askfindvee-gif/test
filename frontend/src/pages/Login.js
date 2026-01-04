@@ -36,14 +36,12 @@ export default function Login({ setIsAuthenticated }) {
     <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-lg">
         {/* Paw Icon */}
-        <div className="mb-16 flex justify-center">
-          <div className="border border-white/20 px-8 py-3">
+        <div className="mb-10 flex justify-center">
+          <div className="h-40 w-40 border-2 border-white/20 flex items-center justify-center">
             <svg
-              width="40"
-              height="40"
               viewBox="0 0 24 24"
               fill="white"
-              className="opacity-90"
+              className="h-14 w-14 opacity-90"
               aria-hidden="true"
               focusable="false"
             >
@@ -53,7 +51,7 @@ export default function Login({ setIsAuthenticated }) {
         </div>
 
         {/* Heading */}
-        <div className="mb-20">
+        <div className="mb-14">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-3" style={{ letterSpacing: '0.02em' }}>
             People For
           </h1>
