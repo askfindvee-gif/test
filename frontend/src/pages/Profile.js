@@ -21,6 +21,16 @@ export default function Profile() {
 
   const fetchProfile = async () => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        const stored = JSON.parse(localStorage.getItem("pfa_user") || "{}");
+        setUser(
+          stored?.email
+            ? stored
+            : { name: "Demo Admin", email: "demo@pfa.org", role: "admin" },
+        );
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -33,6 +43,19 @@ export default function Profile() {
 
   const fetchStats = async () => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        setStats({
+          impact_score: 128,
+          days_active: 42,
+          total_incidents: 18,
+          total_activities: 64,
+          total_missing: 7,
+          total_sos: 3,
+          pending_volunteers: 5,
+        });
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/dashboard/stats`, {
         headers: { Authorization: `Bearer ${token}` }

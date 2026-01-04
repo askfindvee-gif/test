@@ -52,6 +52,113 @@ export default function Intelligence() {
 
   const fetchAnalytics = async () => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        const demoInsights = [
+          {
+            id: "1",
+            type: "critical",
+            title: "Recurring Hotspots",
+            description: "14 locations with repeated incidents/week",
+            confidence: 92,
+            trend: "+28%",
+            severity: "high",
+          },
+          {
+            id: "2",
+            type: "seasonal",
+            title: "Seasonal Spike",
+            description: "Cruelty cases increased during festivals",
+            confidence: 87,
+            trend: "+28%",
+            severity: "medium",
+          },
+          {
+            id: "3",
+            type: "stable",
+            title: "Cruelty Velocity",
+            description: "Incident rate has dropped significantly",
+            confidence: 94,
+            trend: "-2%",
+            severity: "stable",
+          },
+          {
+            id: "4",
+            type: "strong",
+            title: "Prevention Score",
+            description: "Feeding drives correlate with reduced conflict",
+            confidence: 86,
+            trend: "0.86",
+            severity: "positive",
+          },
+        ];
+
+        const demoPatterns = [
+          {
+            id: "1",
+            pattern_name: "Post-festival displacement surge",
+            description: "Confidence Level: 92% - Expected Duration: 48h",
+            type: "detected",
+            severity: "warning",
+          },
+          {
+            id: "2",
+            pattern_name: "Construction Site Recurring Incidents",
+            description: "Sector 4, Rohini - 5 Cases / 24h",
+            type: "new_cluster",
+            severity: "critical",
+          },
+          {
+            id: "3",
+            pattern_name: "Pre-Diwali Anxiety Spikes",
+            description: "National Trend - +10% vs Last Week",
+            type: "seasonal",
+            severity: "medium",
+          },
+          {
+            id: "4",
+            pattern_name: "Positive Impact: Feeding Drives",
+            description: "South District - Conflict reduced by 46%",
+            type: "correlation",
+            severity: "positive",
+          },
+        ];
+
+        const demoTrends = {
+          trends: {
+            accident: [
+              { month: "May", count: 65 },
+              { month: "Jun", count: 72 },
+              { month: "Jul", count: 58 },
+              { month: "Aug", count: 89 },
+              { month: "Sep", count: 95 },
+              { month: "Oct", count: 112 },
+            ],
+            cruelty: [
+              { month: "May", count: 32 },
+              { month: "Jun", count: 38 },
+              { month: "Jul", count: 28 },
+              { month: "Aug", count: 45 },
+              { month: "Sep", count: 51 },
+              { month: "Oct", count: 48 },
+            ],
+          },
+          impact: [
+            { frequency: 1, incidents: 145 },
+            { frequency: 2, incidents: 132 },
+            { frequency: 3, incidents: 118 },
+            { frequency: 4, incidents: 98 },
+            { frequency: 5, incidents: 76 },
+          ],
+        };
+
+        setAllInsights(demoInsights);
+        setInsights(demoInsights);
+        setAllPatterns(demoPatterns);
+        setPatterns(demoPatterns);
+        setTrends(demoTrends);
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       const headers = { Authorization: `Bearer ${token}` };
 

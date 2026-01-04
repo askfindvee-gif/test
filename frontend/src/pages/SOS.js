@@ -21,6 +21,43 @@ export default function SOS() {
 
   const fetchAlerts = async () => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        const now = new Date();
+        setAlerts([
+          {
+            id: "demo-sos-1",
+            description: "Injured animal reported near metro entrance.",
+            location: "Saket Metro",
+            urgency: "high",
+            status: "active",
+            reported_by: "Citizen",
+            created_at: new Date(now.getTime() - 1000 * 60 * 25).toISOString(),
+            resolved_at: null,
+          },
+          {
+            id: "demo-sos-2",
+            description: "Dog trapped; rescue team dispatched.",
+            location: "Rohini Sector 12",
+            urgency: "medium",
+            status: "active",
+            reported_by: "Volunteer",
+            created_at: new Date(now.getTime() - 1000 * 60 * 90).toISOString(),
+            resolved_at: null,
+          },
+          {
+            id: "demo-sos-3",
+            description: "Emergency handled; case resolved.",
+            location: "Mayur Vihar",
+            urgency: "high",
+            status: "resolved",
+            reported_by: "Team",
+            created_at: new Date(now.getTime() - 1000 * 60 * 60 * 10).toISOString(),
+            resolved_at: new Date(now.getTime() - 1000 * 60 * 60 * 7).toISOString(),
+          },
+        ]);
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/sos`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -35,6 +72,18 @@ export default function SOS() {
 
   const resolveAlert = async (id) => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        setAlerts((prev) =>
+          prev.map((a) =>
+            a.id === id
+              ? { ...a, status: "resolved", resolved_at: new Date().toISOString() }
+              : a,
+          ),
+        );
+        toast.success("Alert resolved");
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       await axios.put(`${API}/sos/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }

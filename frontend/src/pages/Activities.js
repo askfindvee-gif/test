@@ -52,6 +52,40 @@ export default function Activities() {
 
   const fetchActivities = async () => {
     try {
+      const isDemo = localStorage.getItem("pfa_demo") === "true";
+      if (isDemo) {
+        const now = new Date();
+        setActivities([
+          {
+            id: "demo-activity-1",
+            type: "Feeding",
+            description: "Evening feeding drive completed successfully.",
+            location: "Rohini Sector 12",
+            volunteer_id: "demo-vol-1",
+            volunteer_name: "Demo Volunteer",
+            created_at: new Date(now.getTime() - 1000 * 60 * 60 * 5).toISOString(),
+          },
+          {
+            id: "demo-activity-2",
+            type: "Rescue",
+            description: "Minor injury treated; animal released safely.",
+            location: "Saket",
+            volunteer_id: "demo-vol-2",
+            volunteer_name: "Rescue Team",
+            created_at: new Date(now.getTime() - 1000 * 60 * 60 * 28).toISOString(),
+          },
+          {
+            id: "demo-activity-3",
+            type: "Welfare",
+            description: "Community awareness session conducted.",
+            location: "Mayur Vihar",
+            volunteer_id: "demo-vol-3",
+            volunteer_name: "Community Lead",
+            created_at: new Date(now.getTime() - 1000 * 60 * 60 * 52).toISOString(),
+          },
+        ]);
+        return;
+      }
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/activities`, {
         headers: { Authorization: `Bearer ${token}` }
