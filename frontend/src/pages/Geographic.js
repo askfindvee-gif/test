@@ -9,7 +9,8 @@ import BottomNav from "@/components/BottomNav";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { states, getDistricts } from "@/data/statesDistricts";
+import { states as fallbackStates, statesDistricts as fallbackDistrictsByState } from "@/data/statesDistricts";
+import { fetchStatesDistrictsFromSheet } from "@/lib/fetchStatesDistrictsFromSheet";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -20,6 +21,7 @@ export default function Geographic() {
   const [clusters, setClusters] = useState({ clusters: {}, districts: [] });
   const [patterns, setPatterns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [regions, setRegions] = useState({ states: fallbackStates, districtsByState: fallbackDistrictsByState });
   const [filter, setFilter] = useState({
     state: "All States",
     district: "All Districts",
@@ -30,6 +32,24 @@ export default function Geographic() {
 
   useEffect(() => {
     fetchGeographic();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    (async () => {
+      try {
+        const next = await fetchStatesDistrictsFromSheet({ signal: controller.signal });
+        if (next?.states?.length) {
+          setRegions(next);
+        }
+      } catch (e) {
+        // Fall back silently to local dataset if the sheet is unavailable.
+        setRegions({ states: fallbackStates, districtsByState: fallbackDistrictsByState });
+      }
+    })();
+
+    return () => controller.abort();
   }, []);
 
   const fetchGeographic = async () => {
@@ -77,6 +97,15 @@ export default function Geographic() {
     { name: 'Semi-Urban', value: clusters.clusters?.semi_urban || 0, color: '#f97316' },
     { name: 'Rural', value: clusters.clusters?.rural || 0, color: '#6b7280' }
   ];
+
+  const districtOptions =
+    filter.state === "All States"
+      ? Array.from(
+          new Set(
+            Object.values(regions.districtsByState || {}).flatMap((d) => (Array.isArray(d) ? d : []))
+          )
+        ).sort((a, b) => a.localeCompare(b))
+      : regions.districtsByState?.[filter.state] || [];
 
   return (
     <div className="min-h-screen bg-black pb-24">
@@ -130,12 +159,20 @@ export default function Geographic() {
             <select
               className="w-full bg-[#0a0a0a] border border-white/10  px-3 py-2 text-sm text-white focus:outline-none focus:border-white/20"
               value={filter.state}
-              onChange={(e) => setFilter({...filter, state: e.target.value})}
+              onChange={(e) =>
+                setFilter({
+                  ...filter,
+                  state: e.target.value,
+                  district: "All Districts"
+                })
+              }
             >
               <option>All States</option>
-              <option>Delhi</option>
-              <option>Maharashtra</option>
-              <option>Karnataka</option>
+              {(regions.states || []).map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -148,9 +185,11 @@ export default function Geographic() {
               onChange={(e) => setFilter({...filter, district: e.target.value})}
             >
               <option>All Districts</option>
-              <option>North Delhi</option>
-              <option>South Delhi</option>
-              <option>East Delhi</option>
+              {districtOptions.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
             </select>
           </div>
           <div>
