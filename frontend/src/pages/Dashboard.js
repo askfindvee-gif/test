@@ -5,6 +5,7 @@ import { Bell, LayoutDashboard, Siren, Activity, MessageCircle, User, ShieldAler
 import BottomNav from "@/components/BottomNav";
 import { toast } from "sonner";
 import ThemeToggle from "@/components/ThemeToggle";
+import { shouldUseDemoData } from "@/lib/demoMode";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -24,6 +25,18 @@ export default function Dashboard() {
 
   const fetchStats = async () => {
     try {
+      if (shouldUseDemoData()) {
+        setStats({
+          impact_score: 87,
+          days_active: 42,
+          total_incidents: 128,
+          total_activities: 1847,
+          total_missing: 23,
+          total_sos: 9
+        });
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/dashboard/stats`, {
         headers: { Authorization: `Bearer ${token}` }

@@ -6,6 +6,7 @@ import BottomNav from "@/components/BottomNav";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { shouldUseDemoData } from "@/lib/demoMode";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -21,6 +22,28 @@ export default function SOS() {
 
   const fetchAlerts = async () => {
     try {
+      if (shouldUseDemoData()) {
+        setAlerts([
+          {
+            id: "demo-sos-1",
+            urgency: "high",
+            status: "active",
+            description: "Injured animal reported. Immediate help requested.",
+            location: "Rohini Sector 12, Delhi",
+            created_at: new Date().toISOString()
+          },
+          {
+            id: "demo-sos-2",
+            urgency: "medium",
+            status: "resolved",
+            description: "Animal rescued and moved to clinic.",
+            location: "Saket, Delhi",
+            created_at: new Date(Date.now() - 3 * 86400000).toISOString()
+          }
+        ]);
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/sos`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -35,6 +58,12 @@ export default function SOS() {
 
   const resolveAlert = async (id) => {
     try {
+      if (shouldUseDemoData()) {
+        setAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, status: "resolved" } : a)));
+        toast.success("Alert resolved (demo)");
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       await axios.put(`${API}/sos/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }

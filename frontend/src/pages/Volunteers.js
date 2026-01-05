@@ -6,6 +6,7 @@ import BottomNav from "@/components/BottomNav";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { shouldUseDemoData } from "@/lib/demoMode";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -21,6 +22,30 @@ export default function Volunteers() {
 
   const fetchVolunteers = async () => {
     try {
+      if (shouldUseDemoData()) {
+        setVolunteers([
+          {
+            id: "demo-v-1",
+            name: "Rajesh Kumar",
+            email: "rajesh@example.com",
+            phone: "+91 98888 88888",
+            location: "South Delhi",
+            status: "pending",
+            joined_at: new Date(Date.now() - 5 * 86400000).toISOString()
+          },
+          {
+            id: "demo-v-2",
+            name: "Aisha Khan",
+            email: "aisha@example.com",
+            phone: "+91 97777 77777",
+            location: "Bengaluru, Karnataka",
+            status: "approved",
+            joined_at: new Date(Date.now() - 20 * 86400000).toISOString()
+          }
+        ]);
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/volunteers`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -35,6 +60,12 @@ export default function Volunteers() {
 
   const updateStatus = async (id, status) => {
     try {
+      if (shouldUseDemoData()) {
+        setVolunteers((prev) => prev.map((v) => (v.id === id ? { ...v, status } : v)));
+        toast.success(`Volunteer ${status} (demo)`);
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       await axios.put(`${API}/volunteers/${id}`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -48,6 +79,12 @@ export default function Volunteers() {
 
   const deleteVolunteer = async (id) => {
     try {
+      if (shouldUseDemoData()) {
+        setVolunteers((prev) => prev.filter((v) => v.id !== id));
+        toast.success("Volunteer removed (demo)");
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       await axios.delete(`${API}/volunteers/${id}`, {
         headers: { Authorization: `Bearer ${token}` }

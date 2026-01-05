@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { clearAuth, shouldUseDemoData } from "@/lib/demoMode";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -21,6 +22,16 @@ export default function Profile() {
 
   const fetchProfile = async () => {
     try {
+      if (shouldUseDemoData()) {
+        const localUser = JSON.parse(localStorage.getItem("pfa_user") || "{}");
+        setUser(
+          localUser?.name
+            ? localUser
+            : { name: "Demo Admin", email: "demo@pfa.org", role: "demo" }
+        );
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -33,6 +44,18 @@ export default function Profile() {
 
   const fetchStats = async () => {
     try {
+      if (shouldUseDemoData()) {
+        setStats({
+          impact_score: 87,
+          days_active: 42,
+          total_incidents: 128,
+          total_activities: 1847,
+          total_missing: 23,
+          total_sos: 9
+        });
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/dashboard/stats`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -44,8 +67,7 @@ export default function Profile() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('pfa_token');
-    localStorage.removeItem('pfa_user');
+    clearAuth();
     toast.success("Logged out successfully");
     window.location.href = '/login';
   };

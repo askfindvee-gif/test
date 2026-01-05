@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { states, getDistricts } from "@/data/statesDistricts";
 import ThemeToggle from "@/components/ThemeToggle";
+import { shouldUseDemoData } from "@/lib/demoMode";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -52,6 +53,89 @@ export default function Intelligence() {
 
   const fetchAnalytics = async () => {
     try {
+      if (shouldUseDemoData()) {
+        const demoInsights = [
+          {
+            id: "demo-i-1",
+            severity: "critical",
+            type: "Critical",
+            trend: "+18%",
+            title: "Cruelty Hotspot Spike",
+            description: "Clustered reports detected over 72h in North Delhi.",
+            confidence: 92
+          },
+          {
+            id: "demo-i-2",
+            severity: "medium",
+            type: "Seasonal",
+            trend: "+7%",
+            title: "Festival Displacement",
+            description: "Post-festival movement causing increased sightings.",
+            confidence: 84
+          },
+          {
+            id: "demo-i-3",
+            severity: "positive",
+            type: "Stable",
+            trend: "-9%",
+            title: "Feeding Zone Stability",
+            description: "High compliance correlates with fewer incidents.",
+            confidence: 78
+          },
+          {
+            id: "demo-i-4",
+            severity: "warning",
+            type: "Detected",
+            trend: "+4%",
+            title: "Construction Impact",
+            description: "Incidents rising near new construction corridors.",
+            confidence: 71
+          }
+        ];
+
+        const demoPatterns = [
+          {
+            id: "demo-p-1",
+            severity: "critical",
+            type: "Critical",
+            pattern_name: "Recurring cruelty cluster",
+            description: "Repeated reports within a tight radius."
+          },
+          {
+            id: "demo-p-2",
+            severity: "warning",
+            type: "Correlation",
+            pattern_name: "Low feeding → higher conflict",
+            description: "Inverse correlation with feeding frequency."
+          }
+        ];
+
+        const demoTrends = {
+          trends: {
+            accident: [
+              { month: "May", count: 18 },
+              { month: "Jun", count: 22 },
+              { month: "Jul", count: 19 },
+              { month: "Aug", count: 26 },
+              { month: "Sep", count: 24 },
+              { month: "Oct", count: 29 }
+            ]
+          },
+          impact: [
+            { frequency: "Low", incidents: 34 },
+            { frequency: "Medium", incidents: 22 },
+            { frequency: "High", incidents: 14 }
+          ]
+        };
+
+        setAllInsights(demoInsights);
+        setInsights(demoInsights);
+        setAllPatterns(demoPatterns);
+        setPatterns(demoPatterns);
+        setTrends(demoTrends);
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       const headers = { Authorization: `Bearer ${token}` };
 
