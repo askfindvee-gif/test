@@ -6,6 +6,7 @@ import BottomNav from "@/components/BottomNav";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { shouldUseDemoData } from "@/lib/demoMode";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -21,6 +22,30 @@ export default function Incidents() {
 
   const fetchIncidents = async () => {
     try {
+      if (shouldUseDemoData()) {
+        setIncidents([
+          {
+            id: "demo-1",
+            severity: "high",
+            status: "pending",
+            type: "Cruelty",
+            description: "Reported abuse near market area. Patrol required.",
+            location: "Connaught Place, Delhi",
+            created_at: new Date().toISOString()
+          },
+          {
+            id: "demo-2",
+            severity: "medium",
+            status: "investigating",
+            type: "Accident",
+            description: "Injured dog spotted near highway divider.",
+            location: "Noida Sector 12",
+            created_at: new Date(Date.now() - 86400000).toISOString()
+          }
+        ]);
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/incidents`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -35,6 +60,14 @@ export default function Incidents() {
 
   const updateStatus = async (id, status) => {
     try {
+      if (shouldUseDemoData()) {
+        setIncidents((prev) =>
+          prev.map((i) => (i.id === id ? { ...i, status } : i))
+        );
+        toast.success("Status updated (demo)");
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       await axios.put(`${API}/incidents/${id}?status=${status}`, {}, {
         headers: { Authorization: `Bearer ${token}` }

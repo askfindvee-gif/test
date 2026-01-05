@@ -2,11 +2,14 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { setDemoAuth, shouldUseDemoData } from "@/lib/demoMode";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 export default function Login({ setIsAuthenticated }) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,6 +19,14 @@ export default function Login({ setIsAuthenticated }) {
     setLoading(true);
 
     try {
+      if (shouldUseDemoData()) {
+        setDemoAuth();
+        setIsAuthenticated(true);
+        toast.success("Demo mode enabled");
+        navigate("/", { replace: true });
+        return;
+      }
+
       const response = await axios.post(`${API}/auth/login`, {
         email,
         password
@@ -25,11 +36,19 @@ export default function Login({ setIsAuthenticated }) {
       localStorage.setItem('pfa_user', JSON.stringify(response.data.user));
       setIsAuthenticated(true);
       toast.success("Login successful!");
+      navigate("/", { replace: true });
     } catch (error) {
       toast.error(error.response?.data?.detail || "Login failed");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDemoMode = () => {
+    setDemoAuth();
+    setIsAuthenticated(true);
+    toast.success("Continuing in demo mode");
+    navigate("/", { replace: true });
   };
 
   return (
@@ -108,6 +127,15 @@ export default function Login({ setIsAuthenticated }) {
             <ArrowRight className="w-5 h-5" />
           </button>
         </form>
+
+        <button
+          type="button"
+          onClick={handleDemoMode}
+          className="w-full mt-4 border border-white/10 hover:border-white/20 text-white font-semibold text-xs uppercase tracking-[0.18em] py-4 transition-colors duration-200"
+          data-testid="continue-demo-mode-button"
+        >
+          Continue in Demo Mode
+        </button>
 
         {/* Footer */}
         <div className="mt-12 text-center">

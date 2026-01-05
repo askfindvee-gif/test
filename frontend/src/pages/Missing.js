@@ -6,6 +6,7 @@ import BottomNav from "@/components/BottomNav";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { shouldUseDemoData } from "@/lib/demoMode";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -21,6 +22,30 @@ export default function Missing() {
 
   const fetchReports = async () => {
     try {
+      if (shouldUseDemoData()) {
+        setReports([
+          {
+            id: "demo-m-1",
+            status: "lost",
+            animal_type: "Dog",
+            description: "Brown indie dog missing since yesterday evening.",
+            location: "Rohini, Delhi",
+            contact: "+91 90000 00000",
+            created_at: new Date().toISOString()
+          },
+          {
+            id: "demo-m-2",
+            status: "found",
+            animal_type: "Cat",
+            description: "White cat found near apartment gate.",
+            location: "Saket, Delhi",
+            contact: "+91 91111 11111",
+            created_at: new Date(Date.now() - 2 * 86400000).toISOString()
+          }
+        ]);
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       const response = await axios.get(`${API}/missing`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -35,6 +60,12 @@ export default function Missing() {
 
   const updateStatus = async (id, status) => {
     try {
+      if (shouldUseDemoData()) {
+        setReports((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+        toast.success("Status updated (demo)");
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       await axios.put(`${API}/missing/${id}?status=${status}`, {}, {
         headers: { Authorization: `Bearer ${token}` }

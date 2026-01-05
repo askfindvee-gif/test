@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { states as fallbackStates, statesDistricts as fallbackDistrictsByState } from "@/data/statesDistricts";
 import { fetchStatesDistrictsFromSheet } from "@/lib/fetchStatesDistrictsFromSheet";
+import { shouldUseDemoData } from "@/lib/demoMode";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -54,6 +55,76 @@ export default function Geographic() {
 
   const fetchGeographic = async () => {
     try {
+      if (shouldUseDemoData()) {
+        setGeoData({
+          stats: {
+            high_feeding_zones: 12,
+            recurring_cruelty_areas: 5,
+            repeated_complaints: 18,
+            intervention_regions: 7
+          },
+          locations: [
+            {
+              latitude: 28.6139,
+              longitude: 77.209,
+              incident_count: 18,
+              severity: "medium",
+              city: "New Delhi",
+              status: "monitor"
+            },
+            {
+              latitude: 28.7041,
+              longitude: 77.1025,
+              incident_count: 26,
+              severity: "high",
+              city: "North Delhi",
+              status: "urgent"
+            },
+            {
+              latitude: 28.5355,
+              longitude: 77.391,
+              incident_count: 12,
+              severity: "low",
+              city: "Noida",
+              status: "stable"
+            }
+          ]
+        });
+        setClusters({
+          clusters: { urban: 52, semi_urban: 31, rural: 17 },
+          districts: [
+            { district: "North Delhi", count: 22 },
+            { district: "South Delhi", count: 14 },
+            { district: "Noida", count: 10 },
+            { district: "Gurugram", count: 8 }
+          ]
+        });
+        setPatterns([
+          {
+            id: "demo-gp-1",
+            severity: "critical",
+            type: "Critical",
+            pattern_name: "Recurring cruelty hotspot",
+            description: "Repeated reports concentrated within 2km radius."
+          },
+          {
+            id: "demo-gp-2",
+            severity: "warning",
+            type: "Warning",
+            pattern_name: "Roadside accident spike",
+            description: "Increased incidents near highway crossings."
+          },
+          {
+            id: "demo-gp-3",
+            severity: "positive",
+            type: "Positive",
+            pattern_name: "Feeding zone stabilization",
+            description: "Higher compliance correlates with fewer conflicts."
+          }
+        ]);
+        return;
+      }
+
       const token = localStorage.getItem('pfa_token');
       const headers = { Authorization: `Bearer ${token}` };
 
